@@ -219,7 +219,7 @@ def test_api_ask_endpoint_with_active_dataset(mock_analysis_response):
     ACTIVE_SESSION["dataset_id"] = mock_analysis_response.dataset_id
     DATASET_SESSIONS[mock_analysis_response.dataset_id] = mock_analysis_response
 
-    with patch("services.ai_analyst.answer_analytical_question") as mock_answer:
+    with patch("main.answer_analytical_question") as mock_answer:
         mock_answer.return_value = {
             "answer": "Total revenue is $2,500,000.00 across 500 completed orders.",
             "observed_facts": ["Total Revenue: $2,500,000.00"],
@@ -237,6 +237,9 @@ def test_api_ask_endpoint_with_active_dataset(mock_analysis_response):
         body = resp.json()
         assert "$2,500,000.00" in body["answer"]
         assert body["is_grounded"] is True
+        mock_answer.assert_called_once_with(
+            "What is our total revenue?", mock_analysis_response
+        )
 
 
 def test_api_ai_status_endpoint():
